@@ -2,7 +2,7 @@
 
 Crawler's base URL: https://crawler-f1-data.onrender.com/
 Crawler's endpoint:
-+ /races/getyear            : Get list of F1 years
++ /races/getyear            : Get list of years
 + /races/getcategory        : Get list of filter categories (races/drivers/teams/fastest-laps)
  
 + /info/races/:year         : Get list of F1 races of the selected year
