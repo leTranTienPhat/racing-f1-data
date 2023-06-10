@@ -42,7 +42,7 @@ app.get("/races/getyear", (req, res) => {
 })
 
 // GET F1 CATEGORY
-app.get("/races/category", (req, res) => {
+app.get("/races/getcategory", (req, res) => {
   const categoryList = []
   try {
     axios(raceUrl).then(response => {
@@ -60,25 +60,25 @@ app.get("/races/category", (req, res) => {
 })
 
 // GET F1 LOCATION BASED ON YEAR
-app.get("/races/location/:year", (req, res) => {
-  const year = req.params.year
-  const locationList = []
-  const raceUrlBasedOnYear = `https://www.formula1.com/en/results.html/${year}/races.html`
+// app.get("/races/getlocation/:year", (req, res) => {
+//   const year = req.params.year
+//   const locationList = []
+//   const raceUrlBasedOnYear = `https://www.formula1.com/en/results.html/${year}/races.html`
 
-  try {
-    axios(raceUrlBasedOnYear).then(response => {
-      const html = response.data
-      const $ = cheerio.load(html)
-      $(".resultsarchive-filter-container > .resultsarchive-filter-wrap:eq(2) > ul > li").each(function () {
-        const location = $(this).find("a").attr("data-value")
-        locationList.push(location)
-      })
-      res.status(200).json(locationList)
-    })
-  } catch (error) {
-    res.status(500).json(error)
-  }
-})
+//   try {
+//     axios(raceUrlBasedOnYear).then(response => {
+//       const html = response.data
+//       const $ = cheerio.load(html)
+//       $(".resultsarchive-filter-container > .resultsarchive-filter-wrap:eq(2) > ul > li").each(function () {
+//         const location = $(this).find("a").attr("data-value")
+//         locationList.push(location)
+//       })
+//       res.status(200).json(locationList)
+//     })
+//   } catch (error) {
+//     res.status(500).json(error)
+//   }
+// })
 
 // GET ALL INFO - RACES
 app.get("/info/races/:year", (req, res) => {
