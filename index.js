@@ -95,7 +95,7 @@ app.get("/info/races/:year", (req, res) => {
 
       // Get table Titles
       $(".resultsarchive-table > thead > tr > th").each(function () {
-        const title = $(this).text().trim().toLowerCase()
+        const title = $(this).text().trim().toLowerCase().replace(' ', '-')
         if (titles) titles.push(title)
       })
 
@@ -106,6 +106,8 @@ app.get("/info/races/:year", (req, res) => {
         $(this).find("td").each((function () {
           let detail;
           switch (count) {
+            case 0:
+              break;
             case 1:
               const raceUrl = $(this).find("a").attr("href")
               const raceName = $(this).find("a").text().trim()
@@ -125,7 +127,7 @@ app.get("/info/races/:year", (req, res) => {
               detail = $(this).text().trim()
               break
           }
-          raceObj[titles[count]] = detail
+          if (detail) raceObj[titles[count]] = detail
           count++
         }))
         details.push(raceObj)
@@ -153,7 +155,7 @@ app.get("/info/drivers/:year", (req, res) => {
 
       // Get table Titles
       $(".resultsarchive-table > thead > tr > th").each(function () {
-        const title = $(this).text().trim().toLowerCase()
+        const title = $(this).text().trim().toLowerCase().replace(' ', '-')
         if (titles) titles.push(title)
       })
 
@@ -189,7 +191,7 @@ app.get("/info/drivers/:year", (req, res) => {
               detail = $(this).text().trim()
               break
           }
-          driverObj[titles[count]] = detail
+          if (detail) driverObj[titles[count]] = detail
           count++
         }))
         details.push(driverObj)
@@ -268,7 +270,7 @@ app.get("/info/fastest-laps/:year", (req, res) => {
 
       // Get table Titles
       $(".resultsarchive-table > thead > tr > th").each(function () {
-        const title = $(this).text().toLowerCase()
+        const title = $(this).text().toLowerCase().replace(' ', '-')
         if (titles) titles.push(title)
       })
 
@@ -292,7 +294,7 @@ app.get("/info/fastest-laps/:year", (req, res) => {
               detail = $(this).text().trim()
               break
           }
-          fastestLapObj[titles[count]] = detail
+          if (detail) fastestLapObj[titles[count]] = detail
           count++
         }))
         details.push(fastestLapObj)
