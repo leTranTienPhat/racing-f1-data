@@ -95,7 +95,7 @@ app.get("/info/races/:year", (req, res) => {
 
       // Get table Titles
       $(".resultsarchive-table > thead > tr > th").each(function () {
-        const title = $(this).text().trim().toLowerCase().replace(' ', '-')
+        const title = $(this).text().trim().toLowerCase().replace(' ', '')
         if (titles) titles.push(title)
       })
 
@@ -155,7 +155,7 @@ app.get("/info/drivers/:year", (req, res) => {
 
       // Get table Titles
       $(".resultsarchive-table > thead > tr > th").each(function () {
-        const title = $(this).text().trim().toLowerCase().replace(' ', '-')
+        const title = $(this).text().trim().toLowerCase().replace(' ', '')
         if (titles) titles.push(title)
       })
 
@@ -270,7 +270,7 @@ app.get("/info/fastest-laps/:year", (req, res) => {
 
       // Get table Titles
       $(".resultsarchive-table > thead > tr > th").each(function () {
-        const title = $(this).text().toLowerCase().replace(' ', '-')
+        const title = $(this).text().toLowerCase().replace(' ', '')
         if (titles) titles.push(title)
       })
 
