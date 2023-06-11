@@ -4,9 +4,15 @@ const axios = require("axios")
 const cheerio = require("cheerio")
 const bodyParser = require("body-parser")
 const dotenv = require("dotenv")
+const mongoose = require('mongoose')
+const Race = require("./models/raceModel")
+const Driver = require("./models/driverModel")
+const Team = require("./models/teamModel")
+const FastestLap = require("./models/fastestLapModel")
 
 const app = express();
 
+app.use(express.json())
 app.use(bodyParser.json({ limit: "50mb" }))
 app.use(cors())
 dotenv.config()
@@ -89,7 +95,7 @@ app.get("/info/races/:year", (req, res) => {
   const titles = []
   const details = []
   try {
-    axios(raceUrlBasedOnYear).then(response => {
+    axios(raceUrlBasedOnYear).then(async (response) => {
       const html = response.data
       const $ = cheerio.load(html)
 
@@ -132,7 +138,10 @@ app.get("/info/races/:year", (req, res) => {
         }))
         details.push(raceObj)
       })
-      res.status(200).json(details)
+      await Race.collection.drop()
+      await Race.insertMany(details).then(
+        res.status(200).json(`Updated all ${year} races`)
+      )
     })
   }
   catch (error) {
@@ -149,7 +158,7 @@ app.get("/info/drivers/:year", (req, res) => {
   const titles = []
   const details = []
   try {
-    axios(raceUrlBasedOnYear).then(response => {
+    axios(raceUrlBasedOnYear).then(async (response) => {
       const html = response.data
       const $ = cheerio.load(html)
 
@@ -194,9 +203,12 @@ app.get("/info/drivers/:year", (req, res) => {
           if (detail) driverObj[titles[count]] = detail
           count++
         }))
-        details.push(driverObj)
+        details.push({ year, ...driverObj })
       })
-      res.status(200).json(details)
+      await Driver.collection.drop()
+      await Driver.insertMany(details).then(
+        res.status(200).json(`Updated all ${year} Driver`)
+      )
     })
   }
   catch (error) {
@@ -213,7 +225,7 @@ app.get("/info/teams/:year", (req, res) => {
   const titles = []
   const details = []
   try {
-    axios(raceUrlBasedOnYear).then(response => {
+    axios(raceUrlBasedOnYear).then(async (response) => {
       const html = response.data
       const $ = cheerio.load(html)
 
@@ -242,12 +254,18 @@ app.get("/info/teams/:year", (req, res) => {
               detail = $(this).text().trim()
               break
           }
-          teamObj[titles[count]] = detail
+          if (detail) teamObj[titles[count]] = detail
           count++
         }))
-        details.push(teamObj)
+        details.push({ year, ...teamObj })
       })
-      res.status(200).json(details)
+      // await Team.insertMany(details).then(
+      //   res.status(200).json(`Updated all ${year} Teams`)
+      // )
+      await Team.collection.drop()
+      await Team.insertMany(details).then(
+        res.status(200).json(`Updated all ${year} Teams`)
+      )
     })
   }
   catch (error) {
@@ -264,7 +282,7 @@ app.get("/info/fastest-laps/:year", (req, res) => {
   const titles = []
   const details = []
   try {
-    axios(raceUrlBasedOnYear).then(response => {
+    axios(raceUrlBasedOnYear).then(async (response) => {
       const html = response.data
       const $ = cheerio.load(html)
 
@@ -297,9 +315,12 @@ app.get("/info/fastest-laps/:year", (req, res) => {
           if (detail) fastestLapObj[titles[count]] = detail
           count++
         }))
-        details.push(fastestLapObj)
+        details.push({ year, ...fastestLapObj })
       })
-      res.status(200).json(details)
+      await FastestLap.collection.drop()
+      await FastestLap.insertMany(details).then(
+        res.status(200).json(`Updated all ${year} fastest laps`)
+      )
     })
   }
   catch (error) {
@@ -307,6 +328,23 @@ app.get("/info/fastest-laps/:year", (req, res) => {
   }
 })
 
-app.listen(process.env.PORT || 8000, () => {
-  console.log("WEB CRAWLER IS RUNNING")
+app.post("/update", async (req, res) => {
+  try {
+    const race = await Race.create(req.body)
+    res.status(200).json(race)
+  } catch (error) {
+    res.status(500).json(error)
+  }
 })
+
+mongoose
+  .connect('mongodb+srv://admin:admin@f1raceapi.itzsjv5.mongodb.net/races?retryWrites=true&w=majority')
+  .then(() => {
+    console.log("connected to mongoDB")
+    app.listen(process.env.PORT || 8000, () => {
+      console.log("WEB CRAWLER IS RUNNING")
+    })
+  })
+  .catch((error) => {
+    console.log(error)
+  })
